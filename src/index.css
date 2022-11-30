@@ -1,0 +1,15 @@
+
+.water-mark{
+    height: 530px;
+    width: calc(100vw - 200px);
+    overflow-y: auto;
+}
+
+body{
+    height: 100vh;
+    overflow: hidden;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+  }
