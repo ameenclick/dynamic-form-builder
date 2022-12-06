@@ -1,6 +1,5 @@
 import React from 'react'
 import { Row } from 'react-bootstrap'
-import { useGlobalContext } from '../Context'
 import Checkbox from './tags/Checkbox';
 import Dropdown from './tags/Dropdown';
 import HeadText from './tags/HeadText';
@@ -11,19 +10,10 @@ import Progress from './tags/Progress';
 import Image from './tags/Image';
 import URL from './tags/URL';
 import Footer from './tags/Footer';
+import { useGlobalContext } from '../Context';
 
-export default function FormGrid() {
-    const {form, show, toggleShow, selected, setSelected , dragStart, dragEnter, dragOverIndex, drop} = useGlobalContext();
-    const handleEdit = (index) => {
-        if (selected === index){ 
-            setSelected(undefined)
-        }
-        else {
-         setSelected(index);
-        }
-        if(!show) toggleShow();
-    }
-
+export default function Preview() {
+    const {form} = useGlobalContext();
     var grid;
     if(form.grid === 1)
     { 
@@ -47,19 +37,14 @@ export default function FormGrid() {
 
   return (
     <div className='container'>
-        <div class={`card my-5`} style={{ width: grid.width}}>
+        <div class={`card my-5 rounded`} style={{ width: grid.width}}>
             <div class="card-body">
                 <h2 class="card-title text-center m-4">{form.title}</h2>
                 <h4 className='m-1'>{form.description}</h4>
                 <Row>
                 {
                     form?.fields?.map((field, index) => 
-                    <div className={`${field.tag === "footer"?"":grid.col}  ${(selected===index)?"border border-3 border-info rounded":(dragOverIndex===index)?"border border-3 border-warning rounded":"border border-3 border-white"}` } key={index}
-                         onClick={() => handleEdit(index)}
-                         onDragStart={(e) => dragStart(e, index)}
-                         onDragEnter={(e) => dragEnter(e, index)}
-                         onDragEnd={() => drop()}
-                         draggable>
+                    <div className={field.tag === "footer"?"":grid.col}  key={index}>
                         <div class="mb-3" style={{ userSelect: "none" }}>
                         <Input field={field} index={index}/>
                         <Textarea field={field} index={index}/>

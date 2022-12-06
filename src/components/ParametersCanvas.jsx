@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import { Offcanvas,Row, }  from 'react-bootstrap';
-import MyVerticallyCenteredModal from "./MyVerticallyCenteredModal";
 import { useGlobalContext } from "../Context";
+import APIConfigure from './CustomSettings/APIConfigure';
 import Button from 'react-bootstrap/Button';
 import CheckboxSettings from './CustomSettings/CheckboxSettings';
 import RadioSettings from './CustomSettings/RadioSettings';
@@ -15,7 +15,7 @@ import FooterSettings from './CustomSettings/FooterSettings';
 
 export default function ParametersCanvas(props) {
   const {show, handleClose, form, setForm, selected, fieldEdit, setEdit, deleteField} = useGlobalContext();
-  //const [modalShow, setModalShow] = useState(false);
+  const [modalShow, setModalShow] = useState(false);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -26,10 +26,10 @@ export default function ParametersCanvas(props) {
 
   return (
     <>
-        {/* <MyVerticallyCenteredModal
+        <APIConfigure
         show={modalShow}
         onHide={() => setModalShow(false)}
-      /> */}
+        /> 
         <Offcanvas show={show} onHide={handleClose} {...props}>
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>Field Parameters</Offcanvas.Title>
@@ -43,7 +43,7 @@ export default function ParametersCanvas(props) {
             <label for="exampleFormControlInput1" class="form-label">Form Description</label>
             <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Describe your form" value={form?.description}  onChange={(e) => setForm({...form, ["description"]: e.target.value})} disabled={selected>=0?true:false}/>
           </div>
-          {fieldEdit.label !== undefined?
+          {fieldEdit?.label?
             <div class="mb-3">
               <label for="exampleFormControlInput1" class="form-label">Field Label</label><span className='text-danger'>*</span>
               <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Give a label for the field"
@@ -52,28 +52,33 @@ export default function ParametersCanvas(props) {
             </div>
             : ""
           }
-         {/* <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">
-              Placeholder
-            </label>
-            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Enter placeholder"
-                value={fieldEdit["placeholder"]} onChange={(e) => setEdit({...fieldEdit,["placeholder"]: e.target.value})} disabled={selected>=0?false:true}/>
-          </div> */}
           <Row>
             <TextareSettings fieldEdit={fieldEdit} setEdit={setEdit} />
-            {fieldEdit?.tag === "dropdown" || fieldEdit?.tag === "radio"?
-            <div className="col mb-3">
+            {(fieldEdit?.tag === "dropdown") || fieldEdit?.tag === "radio"?
+            <div className="row mb-3">
+              <div className='col'>
                   <Button
-                    onClick={() => setOpen(!open)}
-                    aria-controls="example-collapse-text"
-                    aria-expanded={open}
-                  >
+                        onClick={() => setOpen(!open)}
+                        aria-controls="example-collapse-text"
+                        aria-expanded={open}
+                      >
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-view-list" viewBox="0 0 16 16">
                       <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1H3zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2zm0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14z"/>
                     </svg>
                       Update Choice
                   </Button>
-              </div>:""
+              </div>
+              {(fieldEdit?.tag === "dropdown")?
+              <div className='col'>
+                  <Button variant="primary" onClick={() => setModalShow(true)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                      <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+                      <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
+                    </svg>{" "}Set API
+                  </Button>
+              </div>
+              :""}
+            </div>:""
             }
           </Row>
           <Row>
@@ -87,7 +92,7 @@ export default function ParametersCanvas(props) {
             <FooterSettings fieldEdit={fieldEdit} setEdit={setEdit} />
           </Row>
           <Row className="mb-3">
-            { fieldEdit.required !== undefined?
+            { fieldEdit?.hasOwnProperty("required")?
               <div className='col-8'>
                 <div class="form-check">
                   <input class="form-check-input" type="checkbox" checked={fieldEdit["required"]} id="flexCheckDefault" 
@@ -100,7 +105,7 @@ export default function ParametersCanvas(props) {
               : ""
             }
             {
-              fieldEdit?.disabled !== undefined?
+              fieldEdit?.hasOwnProperty("disabled")?
               <div className='col-2'>
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" checked={fieldEdit["disabled"]} id="flexCheckDefault"
@@ -124,6 +129,11 @@ export default function ParametersCanvas(props) {
             </button>
             :""
           }
+          <Row>
+            <div className='col float-end'>
+              <a className='btn btn-success' href="/Builder/Preview">Preview</a>  
+            </div>
+          </Row>
         </Offcanvas.Body>
       </Offcanvas>
     </>

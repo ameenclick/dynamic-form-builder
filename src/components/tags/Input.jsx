@@ -1,5 +1,4 @@
 import React from 'react'
-import { icons } from '../constants/icons'
 
 export default function Input({ field, index }) {
   return ( 

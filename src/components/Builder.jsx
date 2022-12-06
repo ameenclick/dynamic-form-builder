@@ -7,9 +7,10 @@ import NewWaterMark from "./NewWaterMark";
 import ParametersCanvas from "./ParametersCanvas";
 import { useGlobalContext } from "../Context";
 import FormGrid from "./FormGrid";
+import AlertToast from "./CustomSettings/AlertToast";
 
 const Builder = () => {
-    const { form, selected, setSelected } = useGlobalContext();
+    const { form } = useGlobalContext();
     
     return(
     <>
@@ -25,6 +26,7 @@ const Builder = () => {
             </div>
         </div>
         <GridNav />
+        <AlertToast />
         <ParametersCanvas scroll={true} backdrop={false} placement={'end'} name={'Enable body scrolling'} />
     </>
     )

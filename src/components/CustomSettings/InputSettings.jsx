@@ -5,7 +5,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import { names } from '../constants/icons';
 import InputGroup from 'react-bootstrap/InputGroup';
 
-export default function InputSettings({ fieldEdit , setEdit, setModalShow}) {
+export default function InputSettings({ fieldEdit , setEdit}) {
   return (
     fieldEdit?.tag === "input"?
         <div>

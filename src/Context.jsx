@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from 'react'
+import axios from 'axios';
 
 const AppContext = React.createContext();
 
@@ -6,6 +7,11 @@ function AppProvider({ children }) {
 
   //States to manage Offset field parameters
   const [show, setShow] = useState(true);
+  const [alert, setAlert] = useState({ 
+                show:false,
+                message: "",
+                type: "",
+            });
   const handleClose = () => setShow(false);
   const toggleShow = () => setShow((s) => !s);
   const [selected, setSelected] = useState(undefined)
@@ -19,8 +25,12 @@ function AppProvider({ children }) {
   })
   //Checking the change
   useEffect(()=>{
-    console.log("form",form.fields[selected])
+    if(localStorage.getItem("form")) setForm(JSON.parse(localStorage.getItem("form")))
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem("form", JSON.stringify(form))
+  },[form])
 
   //State to manage the fields
   const fields = {
@@ -51,18 +61,30 @@ function AppProvider({ children }) {
         "tag": "dropdown",
         "label": "Dropdown",
         "placeholder": "Placeholder",
-        "choices": [{
+        "choices": [
+            {
                 label:"One",
                 value: 1
             },
             {
                 label:"Two",
-                value: 2
+                value:2,
             },
             {
                 label:"Three",
-                value: 3
+                value:3
             }],
+        "api": {
+            "url": "",
+            "method": "GET",
+            "headers": [
+                {"key": "Authorization", "value": ""}
+            ],
+            "object": "",
+            "label": "label",
+            "value": "value",
+            "data": ""
+        },
         "columns": "col-4",
         "colSize": "form-select",
         "type": "text",
@@ -136,7 +158,7 @@ function AppProvider({ children }) {
   //Making Fields Dragable
   const dragItem = useRef();
   const dragOverItem = useRef();
-  const [dragOverIndex, setDragOverIndex]=useState()
+  const [dragOverIndex, setDragOverIndex]=useState(null)
 
   const dragStart = (e, position) => {
       dragItem.current = position;
@@ -150,28 +172,88 @@ function AppProvider({ children }) {
     };
 
   function drop(tag){
-    if(!tag)
-    {
-        var copyListItems = [...form.fields,];
-        const dragItemContent = copyListItems[dragItem.current];
-        copyListItems.splice(dragItem.current, 1);
-        copyListItems.splice(dragOverItem.current, 0, dragItemContent);
-        dragItem.current = null;
-        dragOverItem.current = null;
+        setSelected(dragOverItem.current)
         setDragOverIndex(null)
-        setForm({...form,["fields"]: copyListItems});
-    }
-    else
-    {
-        var copyListItems = [...form.fields,];
-        const dragItemContent = tag
-        copyListItems.splice(dragOverItem.current, 0, dragItemContent);
-        dragItem.current = null;
-        dragOverItem.current = null;
-        setForm({...form,["fields"]: copyListItems});
-    }
-      
+        if(!tag)
+        {
+            var copyListItems = [...form.fields,];
+            const dragItemContent = copyListItems[dragItem.current];
+            copyListItems.splice(dragItem.current, 1);
+            copyListItems.splice(dragOverItem.current, 0, dragItemContent);
+            dragItem.current = null;
+            dragOverItem.current = null;
+            setForm({...form,["fields"]: copyListItems});
+        }
+        else
+        {
+            var copyListItems = [...form.fields,];
+            const dragItemContent = tag
+            copyListItems.splice(dragOverItem.current, 0, dragItemContent);
+            dragItem.current = null;
+            dragOverItem.current = null;
+            setForm({...form,["fields"]: copyListItems});
+        }  
     };
+
+    //Handle API call
+    const handleFetch = (props) => {
+        if(fieldEdit?.api?.url)
+        {
+            var headers={}
+            //Fetching multiple headers if any
+            for(var i=0;i<fieldEdit?.api?.headers.length; i++)
+            {
+                headers[fieldEdit?.api?.headers[i].key]=fieldEdit?.api?.headers[i].value
+            }
+            console.log(headers)
+            var axiosConfig ={
+                url: fieldEdit?.api?.url,
+                method: fieldEdit?.api?.method,
+                headers: headers
+            } 
+            if(fieldEdit?.api?.method === "POST") axiosConfig["data"]=JSON.stringify(fieldEdit?.api?.data)
+            axios.request(axiosConfig)
+            .then((res) => {
+                console.log(res)
+                if(fieldEdit?.api?.object.length === 0)
+                {
+                    setAlert({
+                        show: true, 
+                        message: "Valid API, but empty or invalid object",
+                        type: "secondary"
+                    })
+                }
+                else
+                {
+                    setEdit({...fieldEdit, ["choices"]: res.data[fieldEdit?.api?.object]})
+                    setAlert({
+                        show: true, 
+                        message: "Valid API, Updated the data successfully",
+                        type: "success"
+                    })
+                    props.onHide()
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+                setAlert({
+                    show: true, 
+                    message: "API Fetch failed : "+err.message,
+                    type: "danger"
+                })
+            })
+            // fetch(fieldEdit["api"], {
+            //     method: "GET",
+
+            // }).then((res) => res.json())
+            // .then((json) => {
+            //     setEdit({...fieldEdit, ["choices"]: json})
+            // })
+        }
+        else{
+            setEdit({...fieldEdit, ["choices"]: ["One","Two","Three"]})
+        }
+    }
 
   //Delete field
   const deleteField = () => {
@@ -188,8 +270,10 @@ function AppProvider({ children }) {
                 show, handleClose, toggleShow,
                 form, setForm,
                 fields, selected, setSelected, fieldEdit, setEdit, deleteField,
-                dragStart, dragEnter, dragOverIndex, drop
-             }}
+                dragStart, dragEnter, dragOverIndex, drop,
+                handleFetch,
+                alert, setAlert
+            }}
         >
             {children}
         </AppContext.Provider>

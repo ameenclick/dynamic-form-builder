@@ -2,9 +2,9 @@ import React, { useEffect } from 'react'
 
 export default function HeadTextSettings({ fieldEdit, setEdit }) {
   useEffect(() => {
-    if(fieldEdit.type === "Head") setEdit({...fieldEdit, ["fontSize"]: "fs-1"})
+    if(fieldEdit?.type === "Head") setEdit({...fieldEdit, ["fontSize"]: "fs-1"})
     else setEdit({...fieldEdit, ["fontSize"]: "fs-5"})
-  }, [fieldEdit.type])
+  }, [fieldEdit?.type])
   
     return (
         fieldEdit?.tag === "static"?
