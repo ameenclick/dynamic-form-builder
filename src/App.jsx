@@ -1,31 +1,31 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
 
 import "bootstrap/dist/css/bootstrap.css"
 import Builder from "./components/Builder";
 
-import "./index.css"
+import "./index.css";
 import BrandNav from "./components/BrandNav";
 //import LandPage from "autoform/Landpage";
 import { AppProvider } from "./Context";
 import Preview from "./components/Preview";
+import { useState } from "react";
 
 function App() {
+  const[preview, setPreview] = useState(false)
 return(
   <>
-    <Router>
-        <BrandNav/>
+        <BrandNav preview={preview} setPreview={setPreview}/>
           <React.StrictMode>
             <AppProvider>
-              <Routes>
-                <Route path="/" element={<Builder />}/>
-                <Route path="/Builder" element={<Builder />}/>
-                <Route path="/Builder/Preview" element={<Preview />} />
-              </Routes>
+              {
+                preview?
+                <Preview setPreview={setPreview}/>
+                :
+                <Builder setPreview={setPreview}/>
+              }
             </AppProvider>
           </React.StrictMode>
-    </Router>
     </>)
 };
 

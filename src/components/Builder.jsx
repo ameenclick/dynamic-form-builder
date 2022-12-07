@@ -8,9 +8,16 @@ import ParametersCanvas from "./ParametersCanvas";
 import { useGlobalContext } from "../Context";
 import FormGrid from "./FormGrid";
 import AlertToast from "./CustomSettings/AlertToast";
+import { useEffect } from "react";
 
-const Builder = () => {
+const Builder = ({setPreview}) => {
     const { form } = useGlobalContext();
+
+    useEffect(() =>(
+        document.body.style.backgroundImage=null,
+        document.body.style.overflow='hidden'
+
+    ))
     
     return(
     <>
@@ -27,7 +34,7 @@ const Builder = () => {
         </div>
         <GridNav />
         <AlertToast />
-        <ParametersCanvas scroll={true} backdrop={false} placement={'end'} name={'Enable body scrolling'} />
+        <ParametersCanvas scroll={true} backdrop={false} placement={'end'} name={'Enable body scrolling'} setPreview={setPreview}/>
     </>
     )
 };

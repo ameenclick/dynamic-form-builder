@@ -13,7 +13,7 @@ export default function Fields() {
       const {fields, form ,setForm, drop} = useGlobalContext();
 
       return (
-        <aside className={`${builder["icons-inner"]} rounded`}>
+        <aside className={`${builder["icons-inner"]} rounded-bottom`}>
                 <div className="bg-primary">
                     <OverlayTrigger
                         placement="right"

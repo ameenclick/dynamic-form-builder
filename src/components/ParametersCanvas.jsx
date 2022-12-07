@@ -12,6 +12,8 @@ import HeadTextSettings from './CustomSettings/HeadTextSettings';
 import ImageSettings from './CustomSettings/ImageSettings';
 import URLSettings from './CustomSettings/URLSettings';
 import FooterSettings from './CustomSettings/FooterSettings';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 export default function ParametersCanvas(props) {
   const {show, handleClose, form, setForm, selected, fieldEdit, setEdit, deleteField} = useGlobalContext();
@@ -32,7 +34,29 @@ export default function ParametersCanvas(props) {
         /> 
         <Offcanvas show={show} onHide={handleClose} {...props}>
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>Field Parameters</Offcanvas.Title>
+          <Offcanvas.Title>Field Parameters
+          {"   "}
+          <OverlayTrigger
+              placement="bottom"
+              delay={{ show: 250, hide: 400 }}
+              overlay={
+                  <Tooltip id="button-tooltip">
+                      Clear form
+                  </Tooltip>
+              }
+              >
+              <svg title="Reset the form" onClick={() => {
+              if(confirm("The form you build will clear permanently"))
+              {
+                setForm({...form, ["fields"]: []})
+              }
+            }}
+              xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+              <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+            </svg>
+            </OverlayTrigger>
+          </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <div class="mb-3">
@@ -130,9 +154,14 @@ export default function ParametersCanvas(props) {
             :""
           }
           <Row>
-            <div className='col float-end'>
-              <a className='btn btn-success' href="/Builder/Preview">Preview</a>  
-            </div>
+            <button className='btn btn-success rounded-pill' onClick={()=> {
+              if(form?.fields?.length>0) props.setPreview(true)
+              else alert("Create a form")
+              }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-play-fill" viewBox="0 0 16 16">
+                <path d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM6 5.883a.5.5 0 0 1 .757-.429l3.528 2.117a.5.5 0 0 1 0 .858l-3.528 2.117a.5.5 0 0 1-.757-.43V5.884z"/>
+              </svg>{" "}Preview
+            </button>  
           </Row>
         </Offcanvas.Body>
       </Offcanvas>
