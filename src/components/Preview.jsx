@@ -49,7 +49,7 @@ export default function Preview({setPreview}) {
   return (
     <>
     <div className='container d-flex justify-content-center '>
-        <div class= 'card'  style={{ width: grid.width}}>
+        <div class= 'card m-3'  style={{ width: grid.width}}>
             <div class="card-body">
                 <h2 class="card-title text-center m-4">{form.title}</h2>
                 <h4 className='m-1'>{form.description}</h4>
@@ -76,11 +76,6 @@ export default function Preview({setPreview}) {
             </div>
         </div>
     </div>
-     {/* <div className='mb-3'>
-     <footer class="blockquote-footer">
-        <img className='img-fluid' src="./assets/images/Cloud.jpg" width='100%'/>
-     </footer>
-    </div> */}
     </>
   )
 }

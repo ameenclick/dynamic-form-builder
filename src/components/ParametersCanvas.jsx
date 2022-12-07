@@ -151,9 +151,8 @@ export default function ParametersCanvas(props) {
               </svg>
                 {"  "}Delete
             </button>
-            :""
-          }
-          <Row>
+            :
+            <Row>
             <button className='btn btn-success rounded-pill' onClick={()=> {
               if(form?.fields?.length>0) props.setPreview(true)
               else alert("Create a form")
@@ -163,6 +162,7 @@ export default function ParametersCanvas(props) {
               </svg>{" "}Preview
             </button>  
           </Row>
+          }
         </Offcanvas.Body>
       </Offcanvas>
     </>
