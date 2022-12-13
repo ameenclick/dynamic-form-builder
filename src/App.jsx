@@ -2,30 +2,37 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import "bootstrap/dist/css/bootstrap.css"
-import Builder from "./components/Builder";
+import LandPage from "./Landpage"
 
 import "./index.css";
 import BrandNav from "./components/BrandNav";
-//import LandPage from "autoform/Landpage";
-import { AppProvider } from "./Context";
-import Preview from "./components/Preview";
-import { useState } from "react";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Form from "./components/Form";
+import Main from "./components/Main";
+import { AppProvider } from './Context';
+import Forms from "./Forms";
+import AlertToast from "./components/CustomSettings/AlertToast";
 
 function App() {
-  const[preview, setPreview] = useState(false)
 return(
   <>
-        <BrandNav preview={preview} setPreview={setPreview}/>
-          <React.StrictMode>
-            <AppProvider>
-              {
-                preview?
-                <Preview setPreview={setPreview}/>
-                :
-                <Builder setPreview={setPreview}/>
-              }
-            </AppProvider>
-          </React.StrictMode>
+    <BrandNav/>
+    <React.StrictMode>
+        <AppProvider>
+            <AlertToast />
+        <Router>
+        <Routes>
+            <Route path="/" element={<LandPage />} />
+            <Route path="/Forms" element={<Forms />} />
+            <Route path="/Builder" element={<Main />}>
+            </Route>
+            <Route path="/Builder/:id" element={<Main />}>
+            </Route>
+            <Route path="/Form/:id" element={<Form />}/>
+            </Routes>
+        </Router>
+        </AppProvider>
+    </React.StrictMode>
     </>)
 };
 

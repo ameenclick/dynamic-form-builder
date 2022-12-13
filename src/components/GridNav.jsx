@@ -6,7 +6,6 @@ import { useGlobalContext } from '../Context';
 
 export default function GridNav() {
     const {form, setForm} = useGlobalContext();
-    console.log(form?.grid===1)
 
   return (
     <div className='fixed-bottom mx-5' align="center">

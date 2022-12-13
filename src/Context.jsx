@@ -1,5 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from 'react'
 import axios from 'axios';
+import { url } from "../config"
+import { useParams } from 'react-router-dom';
 
 const AppContext = React.createContext();
 
@@ -15,18 +17,29 @@ function AppProvider({ children }) {
   const handleClose = () => setShow(false);
   const toggleShow = () => setShow((s) => !s);
   const [selected, setSelected] = useState(undefined)
+  const [workingId, setWorking] = useState(null);
+  const [showShare, setShare] = useState(false);
+  const [response, setResponse] = useState([])
 
   //State to manage form
   const [form, setForm] = useState({
     title: "",
     description: "",
     grid: 1,
+    active: true,
     fields: []
   })
+
   //Checking the change
   useEffect(()=>{
     if(localStorage.getItem("form")) setForm(JSON.parse(localStorage.getItem("form")))
+    if(localStorage.getItem("workingId") && !workingId) setWorking(localStorage.getItem("workingId"))
   }, [])
+
+  //Update WorkingID when there is a change
+  useEffect(() => {
+    if(workingId) localStorage.setItem("workingId",workingId)
+  }, [workingId])
 
   useEffect(() => {
     localStorage.setItem("form", JSON.stringify(form))
@@ -45,7 +58,8 @@ function AppProvider({ children }) {
         "icon": {
             "span": "prefix",
             "svg": undefined
-        }
+        },
+        "response": "" 
     },
     "textarea": {
         "tag": "textarea",
@@ -56,6 +70,7 @@ function AppProvider({ children }) {
         "colSize": "form-control",
         "type": "text",
         "required": false,
+        "response": "" 
     },
     "dropdown": {
         "tag": "dropdown",
@@ -83,12 +98,13 @@ function AppProvider({ children }) {
             "object": "",
             "label": "label",
             "value": "value",
-            "data": ""
+            "data": "",
         },
         "columns": "col-4",
         "colSize": "form-select",
         "type": "text",
         "required": false,
+        "response": "" 
     },
     "checkbox": {
         "tag": "checkbox",
@@ -96,7 +112,8 @@ function AppProvider({ children }) {
         "value": "Check the Value",
         "required": false,
         "checked": false,
-        "disabled": false
+        "disabled": false,
+        "response": "" 
     },
     "radio": {
         "tag": "radio",
@@ -106,6 +123,7 @@ function AppProvider({ children }) {
         "choices": ["choice1","choice2"],
         "required": false,
         "checked": false,
+        "response": "" 
     },
     "static": {
         "tag": "static",
@@ -118,7 +136,8 @@ function AppProvider({ children }) {
         "tag": "rateing",
         "value": 0, 
         "max": 100,
-        "label": "Progress Bar" 
+        "label": "Progress Bar",
+        "response": "" 
     },
     "image": {
         "tag": "image",
@@ -242,37 +261,132 @@ function AppProvider({ children }) {
                     type: "danger"
                 })
             })
-            // fetch(fieldEdit["api"], {
-            //     method: "GET",
-
-            // }).then((res) => res.json())
-            // .then((json) => {
-            //     setEdit({...fieldEdit, ["choices"]: json})
-            // })
         }
         else{
             setEdit({...fieldEdit, ["choices"]: ["One","Two","Three"]})
         }
     }
 
-  //Delete field
-  const deleteField = () => {
-    var formList=form.fields
-    formList.splice(selected,1)
-    setForm({...form,["fields"]:formList})
-    setSelected(undefined)
-    setEdit({})
-  }
+    const saveForm = (props) => {
+        if(!workingId)
+        {
+            axios.post(url.API+"Form/Store", form, {
+                headers: { 'Content-Type': 'application/json'}
+            })
+            .then((res) => {
+                if(res.data._id)
+                {
+                    setAlert({
+                        show: true, 
+                        message: "Form Created Successfully",
+                        type: "success"
+                    })
+                    setWorking(res.data._id);
+                    localStorage.setItem("workingId",res.data._id)
+                }
+                else
+                {
+                    setAlert({
+                        show: true, 
+                        message: "Something went wrong",
+                        type: "secondary"
+                    })
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+                setAlert({
+                        show: true, 
+                        message: "API failed : "+err.message,
+                        type: "danger"
+                    })
+            })
+        }
+        else
+        {
+            updateForm(workingId);
+        }
+        setShare(true)
+    }
+
+    function updateForm(){
+        axios.patch(url.API+"Form/"+arguments[0], arguments.length>1?arguments[1]:form, {
+            headers: { 'Content-Type': 'application/json'}
+        })
+            .then((res) => {
+                if(res.data._id)
+                {
+                    setAlert({
+                        show: true, 
+                        message: "Form Updated Successfully",
+                        type: "success"
+                    })
+                }
+                else
+                {
+                    setAlert({
+                        show: true, 
+                        message: "Something went wrong",
+                        type: "secondary"
+                    })
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+                setAlert({
+                    show: true, 
+                    message: "API failed : "+err.message,
+                    type: "danger"
+                })
+            })
+    }
+
+    //Get a form by id
+    function getForm(id){
+        axios.get(url.API+"Form/"+id, {headers: { "Content-Type": "application/json"}})
+            .then((res) => {
+                if(res.data._id){
+                    setForm(res.data);
+                    setWorking(id)
+                }
+                console.log("Form")
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    //Delete field
+    const deleteField = () => {
+        var formList=form.fields
+        formList.splice(selected,1)
+        setForm({...form,["fields"]:formList})
+        setSelected(undefined)
+        setEdit({})
+    }
+
+    //Set Response
+    function responseLoad(id){
+        axios.get(url.API+"Form/"+id, {headers: { "Content-Type": "application/json"}})
+        .then(res => {
+            var response=[]
+            for(var i=0;i<res.data.length;i++)
+            {
+
+            }
+        })
+    }
 
     return (
         <AppContext.Provider
             value={{ 
                 show, handleClose, toggleShow,
-                form, setForm,
+                form, setForm, getForm,updateForm,
                 fields, selected, setSelected, fieldEdit, setEdit, deleteField,
                 dragStart, dragEnter, dragOverIndex, drop,
-                handleFetch,
-                alert, setAlert
+                handleFetch, saveForm,
+                alert, setAlert,
+                showShare, setShare, workingId, setWorking
             }}
         >
             {children}

@@ -14,7 +14,7 @@ export default function BrandNav({preview, setPreview}) {
             className="d-inline-block align-top ms-2"
             />
         </Navbar.Brand>
-        <Nav className='me-auto'>
+        {/* <Nav className='me-auto'>
           {
             preview?
             <button className='btn btn-outline-primary' onClick={()=>{setPreview(false)}}>
@@ -24,7 +24,7 @@ export default function BrandNav({preview, setPreview}) {
             </button>
             :""
           }
-        </Nav>
+        </Nav> */}
     </Navbar>
   )
 }

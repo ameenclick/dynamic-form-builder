@@ -9,6 +9,7 @@ import { useGlobalContext } from "../Context";
 import FormGrid from "./FormGrid";
 import AlertToast from "./CustomSettings/AlertToast";
 import { useEffect } from "react";
+import Helmet from "react-helmet";
 
 const Builder = ({setPreview}) => {
     const { form } = useGlobalContext();
@@ -17,22 +18,31 @@ const Builder = ({setPreview}) => {
         document.body.style.backgroundImage=null,
         document.body.style.overflow='hidden'
 
-    ))
+    ),[])
     
     return(
     <>
+        <Helmet>
+            <title>
+                Form Builder
+            </title>
+        </Helmet>
         <div className="row" style={{height: "680px"}}>
             <Fields />
             <div className='water-mark'>
                 {
-                    !form?.fields?.length?
+                    form?.fields?.length===0?
                     <NewWaterMark />
                     :
                     <FormGrid />
                 }
             </div>
         </div>
-        <GridNav />
+        {
+            screen.width > 500?
+            <GridNav />
+            :""
+        }
         <AlertToast />
         <ParametersCanvas scroll={true} backdrop={false} placement={'end'} name={'Enable body scrolling'} setPreview={setPreview}/>
     </>

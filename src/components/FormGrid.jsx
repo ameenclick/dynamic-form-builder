@@ -24,18 +24,19 @@ export default function FormGrid() {
         if(!show) toggleShow();
     }
 
+    //console.log(screen.width)
     var grid;
     if(form.grid === 1)
     { 
         grid={
         col:"col-12",
-        width: "50%"
+        width: ((screen.width>900)?"50%": ((screen.width>700)? "75%":"100%"))
         }
     }
     else if(form.grid === 2){
         grid={
             col:"col-lg-6 col-12",
-            width: "75%"
+            width: ((screen.width>900)?"75%": ((screen.width>700)? "90%":"100%"))
             }
     }
     else{
@@ -47,7 +48,9 @@ export default function FormGrid() {
 
   return (
     <div className='container'>
-        <div class={`card my-5`} style={{ width: grid.width}}>
+        {/* {
+            form?.fields?.map((pages, pi) =>  */}
+        <div class={`card my-2 border`} style={{ width: grid.width}}>
             <div class="card-body">
                 <h2 class="card-title text-center m-4">{form.title}</h2>
                 <h4 className='m-1'>{form.description}</h4>
@@ -79,6 +82,7 @@ export default function FormGrid() {
                 
             </div>
         </div>
+    {/* )} */}
     </div>
   )
 }

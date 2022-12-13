@@ -14,9 +14,10 @@ import URLSettings from './CustomSettings/URLSettings';
 import FooterSettings from './CustomSettings/FooterSettings';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import Share from './Share';
 
 export default function ParametersCanvas(props) {
-  const {show, handleClose, form, setForm, selected, fieldEdit, setEdit, deleteField} = useGlobalContext();
+  const {show, handleClose, form, setForm, selected, fieldEdit, setEdit, deleteField, saveForm} = useGlobalContext();
   const [modalShow, setModalShow] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -28,6 +29,7 @@ export default function ParametersCanvas(props) {
 
   return (
     <>
+        <Share />
         <APIConfigure
         show={modalShow}
         onHide={() => setModalShow(false)}
@@ -49,6 +51,7 @@ export default function ParametersCanvas(props) {
               if(confirm("The form you build will clear permanently"))
               {
                 setForm({...form, ["fields"]: []})
+                localStorage.clear();
               }
             }}
               xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
@@ -67,7 +70,7 @@ export default function ParametersCanvas(props) {
             <label for="exampleFormControlInput1" class="form-label">Form Description</label>
             <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Describe your form" value={form?.description}  onChange={(e) => setForm({...form, ["description"]: e.target.value})} disabled={selected>=0?true:false}/>
           </div>
-          {fieldEdit?.label?
+          {fieldEdit?.hasOwnProperty("label")?
             <div class="mb-3">
               <label for="exampleFormControlInput1" class="form-label">Field Label</label><span className='text-danger'>*</span>
               <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Give a label for the field"
@@ -152,17 +155,36 @@ export default function ParametersCanvas(props) {
                 {"  "}Delete
             </button>
             :
-            <Row>
+            <Row className='mb-2 d-flex justify-content-center'>
+              <div className='col align-self-center'>
+                <button className='btn btn-primary rounded-pill' onClick={()=> {
+                if(form?.fields?.length>0) props.setPreview(true)
+                else alert("Create a form")
+                }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-file-play-fill" viewBox="0 0 16 16">
+                    <path d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM6 5.883a.5.5 0 0 1 .757-.429l3.528 2.117a.5.5 0 0 1 0 .858l-3.528 2.117a.5.5 0 0 1-.757-.43V5.884z"/>
+                  </svg>{" "}Preview
+                </button>
+              </div>
+              <div className='col align-self-center'>
+                <button className='btn btn-success rounded-pill' onClick={saveForm}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-send-check" viewBox="0 0 16 16">
+                    <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855a.75.75 0 0 0-.124 1.329l4.995 3.178 1.531 2.406a.5.5 0 0 0 .844-.536L6.637 10.07l7.494-7.494-1.895 4.738a.5.5 0 1 0 .928.372l2.8-7Zm-2.54 1.183L5.93 9.363 1.591 6.602l11.833-4.733Z"/>
+                    <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-1.993-1.679a.5.5 0 0 0-.686.172l-1.17 1.95-.547-.547a.5.5 0 0 0-.708.708l.774.773a.75.75 0 0 0 1.174-.144l1.335-2.226a.5.5 0 0 0-.172-.686Z"/>
+                </svg>{" "}Save & Share
+                </button>
+              </div>
+          </Row>
+          }
+          {/* <Row>
             <button className='btn btn-success rounded-pill' onClick={()=> {
-              if(form?.fields?.length>0) props.setPreview(true)
-              else alert("Create a form")
+              setForm({...form, ["fields"]:[...form.fields,[]]})
               }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-play-fill" viewBox="0 0 16 16">
                 <path d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM6 5.883a.5.5 0 0 1 .757-.429l3.528 2.117a.5.5 0 0 1 0 .858l-3.528 2.117a.5.5 0 0 1-.757-.43V5.884z"/>
-              </svg>{" "}Preview
+              </svg>{" "}Add Page
             </button>  
-          </Row>
-          }
+          </Row> */}
         </Offcanvas.Body>
       </Offcanvas>
     </>

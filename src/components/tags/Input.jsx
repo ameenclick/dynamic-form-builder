@@ -13,7 +13,12 @@ export default function Input({ field, index }) {
           </span>
           :""
         }
-        <input type={field.type} name={`${field.tag}${index}`} class={field.colSize+" "+field.columns} id="exampleFormControlInput1" placeholder={field.placeholder} require={field.required} disable={field.disabled}/>
+        <input type={field.type} name={`${field.tag}${index}`} 
+                class={field.colSize+" "+field.columns} 
+                id="exampleFormControlInput1" 
+                placeholder={field.placeholder} 
+                require={field.required} 
+                disable={field.disabled}/>
         {
           field.icon?.span === "sufix" && field?.icon?.svg?
           <span class="input-group-text">
