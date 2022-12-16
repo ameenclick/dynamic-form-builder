@@ -5,7 +5,7 @@ const Landpage =() =>{
     return(
     <>
     <div className="container center">
-    <h2 className='text-center mt-5'>Choose Your Grid Form</h2>
+    <h2 className='text-center mt-5'>Form Builder</h2>
         <div className="row mt-5" align="center">
             <div className="offset-lg-1 col-lg-3 pt-5">
                     <a type="button" className="btn btn-outline-primary p-4 justify-content-center"
@@ -18,12 +18,12 @@ const Landpage =() =>{
                     </a>
             </div>
             <div className=" col-lg-3 pt-5">
-                    <a type="button" className="btn btn-outline-primary p-4 justify-content-center" style={{width:"150px"}}
+                <a type="button" className="btn btn-outline-primary p-4 justify-content-center" style={{width:"150px"}}
                     href="/Forms">      
-                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-list-check" viewBox="0 0 16 16">  
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-list-check" viewBox="0 0 16 16">  
                         <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3.854 2.146a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 3.293l1.146-1.147a.5.5 0 0 1 .708 0zm0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 7.293l1.146-1.147a.5.5 0 0 1 .708 0zm0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"/></svg>
-                        <br />Forms
-                    </a>
+                    <br />Forms
+                </a>
             </div>  
             <div className="col-lg-3 pt-5">
                     <button type="button" className="btn btn-outline-primary p-4 justify-content-center" 
@@ -31,9 +31,9 @@ const Landpage =() =>{
                         style={{width:"150px"}}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-person-fill-check" viewBox="0 0 16 16">  <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>  
                         <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/></svg>
-                        <br />Responses
+                        <br />Respond
                     </button>
-                    </div>
+                </div>
             </div>
     </div>
     </>

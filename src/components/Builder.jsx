@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import Helmet from "react-helmet";
 
 const Builder = ({setPreview}) => {
-    const { form } = useGlobalContext();
+    const { form, handleEdit } = useGlobalContext();
 
     useEffect(() =>(
         document.body.style.backgroundImage=null,
@@ -27,22 +27,24 @@ const Builder = ({setPreview}) => {
                 Form Builder
             </title>
         </Helmet>
-        <div className="row" style={{height: "680px"}}>
-            <Fields />
-            <div className='water-mark'>
-                {
-                    form?.fields?.length===0?
-                    <NewWaterMark />
-                    :
-                    <FormGrid />
-                }
+        <div onClick={handleEdit}>
+            <div className="row" style={{height: "680px"}}>
+                <Fields />
+                <div className='water-mark'>
+                    {
+                        form?.fields?.length===0?
+                        <NewWaterMark />
+                        :
+                        <FormGrid />
+                    }
+                </div>
             </div>
+            {
+                screen.width > 500?
+                <GridNav />
+                :""
+            }
         </div>
-        {
-            screen.width > 500?
-            <GridNav />
-            :""
-        }
         <AlertToast />
         <ParametersCanvas scroll={true} backdrop={false} placement={'end'} name={'Enable body scrolling'} setPreview={setPreview}/>
     </>

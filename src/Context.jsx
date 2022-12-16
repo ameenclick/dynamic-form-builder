@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from 'react'
 import axios from 'axios';
 import { url } from "../config"
-import { useParams } from 'react-router-dom';
 
 const AppContext = React.createContext();
 
@@ -16,10 +15,11 @@ function AppProvider({ children }) {
             });
   const handleClose = () => setShow(false);
   const toggleShow = () => setShow((s) => !s);
+  const [onForm, setHover] = useState(false);
   const [selected, setSelected] = useState(undefined)
   const [workingId, setWorking] = useState(null);
   const [showShare, setShare] = useState(false);
-  const [response, setResponse] = useState([])
+  const selectedIndex = useRef(null);
 
   //State to manage form
   const [form, setForm] = useState({
@@ -57,7 +57,7 @@ function AppProvider({ children }) {
         "required": false,
         "icon": {
             "span": "prefix",
-            "svg": undefined
+            "svg": null
         },
         "response": "" 
     },
@@ -119,7 +119,6 @@ function AppProvider({ children }) {
         "tag": "radio",
         "label": "Radio Field",
         "inline": "form-check-inline",
-        "value": "",
         "choices": ["choice1","choice2"],
         "required": false,
         "checked": false,
@@ -134,10 +133,10 @@ function AppProvider({ children }) {
     },
     "rateing": {
         "tag": "rateing",
-        "value": 0, 
+        "min": 0, 
         "max": 100,
-        "label": "Progress Bar",
-        "response": "" 
+        "label": "Progress Bar Out of 10",
+        "response": 0 
     },
     "image": {
         "tag": "image",
@@ -316,11 +315,22 @@ function AppProvider({ children }) {
             .then((res) => {
                 if(res.data._id)
                 {
-                    setAlert({
+                    if(arguments.length>1)
+                    {
+                        setAlert({
+                            show: true, 
+                            message: arguments.length>1?arguments[1].active?"Form Activated":"Form Deactivated":"",
+                            type: arguments.length>1?arguments[1].active?"success":"warning":""
+                        })
+                    }
+                    else
+                    {
+                        setAlert({
                         show: true, 
                         message: "Form Updated Successfully",
                         type: "success"
                     })
+                    }
                 }
                 else
                 {
@@ -339,12 +349,31 @@ function AppProvider({ children }) {
                     type: "danger"
                 })
             })
+
+    }
+
+    //Handle Form Selection
+    const handleEdit = () => {
+        if(selectedIndex.current>=0 && onForm){
+            if (selected === selectedIndex.current){ 
+                setSelected(null)
+            }
+            else {
+                setSelected(selectedIndex.current);
+            }
+        }
+        else
+        {
+            setSelected(null)
+        }
+        if(!show) toggleShow();
     }
 
     //Get a form by id
     function getForm(id){
         axios.get(url.API+"Form/"+id, {headers: { "Content-Type": "application/json"}})
             .then((res) => {
+                console.log(res)
                 if(res.data._id){
                     setForm(res.data);
                     setWorking(id)
@@ -365,23 +394,12 @@ function AppProvider({ children }) {
         setEdit({})
     }
 
-    //Set Response
-    function responseLoad(id){
-        axios.get(url.API+"Form/"+id, {headers: { "Content-Type": "application/json"}})
-        .then(res => {
-            var response=[]
-            for(var i=0;i<res.data.length;i++)
-            {
-
-            }
-        })
-    }
-
     return (
         <AppContext.Provider
             value={{ 
                 show, handleClose, toggleShow,
-                form, setForm, getForm,updateForm,
+                form, setForm, getForm,updateForm, onForm, setHover, 
+                selectedIndex, handleEdit,
                 fields, selected, setSelected, fieldEdit, setEdit, deleteField,
                 dragStart, dragEnter, dragOverIndex, drop,
                 handleFetch, saveForm,

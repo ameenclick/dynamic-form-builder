@@ -64,11 +64,11 @@ export default function ParametersCanvas(props) {
         <Offcanvas.Body>
           <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Form Title</label><span className='text-danger'>*</span>
-            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Enter title of your form" value={form?.title} onChange={(e) => setForm({...form, ["title"]: e.target.value})} disabled={selected>=0?true:false}/>
+            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Enter title of your form" value={form?.title} onChange={(e) => setForm({...form, ["title"]: e.target.value})} disabled={selected!=null?true:false}/>
           </div>
           <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Form Description</label>
-            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Describe your form" value={form?.description}  onChange={(e) => setForm({...form, ["description"]: e.target.value})} disabled={selected>=0?true:false}/>
+            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Describe your form" value={form?.description}  onChange={(e) => setForm({...form, ["description"]: e.target.value})} disabled={selected!=null?true:false}/>
           </div>
           {fieldEdit?.hasOwnProperty("label")?
             <div class="mb-3">
@@ -146,7 +146,7 @@ export default function ParametersCanvas(props) {
             }
           </Row>
           {
-           selected>=0?
+           selected!=null?
             <button type="button" class="btn btn-danger mx-2 float-end" onClick={() => deleteField()}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>

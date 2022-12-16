@@ -46,7 +46,7 @@ export default function InputSettings({ fieldEdit , setEdit}) {
               <InputGroup className="mb-3">
                 <DropdownButton
                   variant="outline-secondary"
-                  title={fieldEdit?.icon?.svg?fieldEdit.icon.svg:"Icons"}
+                  title={fieldEdit?.icon?.svg?icons[fieldEdit.icon.svg]:"Icons"}
                   id="input-group-dropdown-1"
                 >
                   <div className='text-center' style={{ height: "200px", overflowY: "scroll"}}>
@@ -56,7 +56,7 @@ export default function InputSettings({ fieldEdit , setEdit}) {
                     </Dropdown.Item>
                     {
                       icons.map((icon, index) =>
-                        <Dropdown.Item href="#" key={index} onClick={() => setEdit({...fieldEdit, ["icon"]: { span: fieldEdit?.icon?.span, svg: icon}})}
+                        <Dropdown.Item href="#" key={index} onClick={() => {console.log(index); setEdit({...fieldEdit, ["icon"]: { span: fieldEdit?.icon?.span, svg: index}})}}
                             >
                             {icon}{" "+names[index]}
                         </Dropdown.Item>

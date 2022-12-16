@@ -13,16 +13,7 @@ import URL from './tags/URL';
 import Footer from './tags/Footer';
 
 export default function FormGrid() {
-    const {form, show, toggleShow, selected, setSelected , dragStart, dragEnter, dragOverIndex, drop} = useGlobalContext();
-    const handleEdit = (index) => {
-        if (selected === index){ 
-            setSelected(undefined)
-        }
-        else {
-         setSelected(index);
-        }
-        if(!show) toggleShow();
-    }
+    const {form, selected, dragStart, dragEnter, dragOverIndex, drop, setHover, selectedIndex} = useGlobalContext();
 
     //console.log(screen.width)
     var grid;
@@ -48,17 +39,15 @@ export default function FormGrid() {
 
   return (
     <div className='container'>
-        {/* {
-            form?.fields?.map((pages, pi) =>  */}
-        <div class={`card my-2 border`} style={{ width: grid.width}}>
+        <div class={`card my-2 border`} style={{ width: grid.width}} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
             <div class="card-body">
                 <h2 class="card-title text-center m-4">{form.title}</h2>
                 <h4 className='m-1'>{form.description}</h4>
                 <Row>
                 {
                     form?.fields?.map((field, index) => 
-                    <div className={`${field.tag === "footer"?"":grid.col}  ${(selected===index)?"border border-3 border-info rounded":(dragOverIndex===index)?"border border-3 border-warning rounded":"border border-3 border-white"}` } key={index}
-                         onClick={() => handleEdit(index)}
+                    <div className={`${field?.tag === "footer"?"":grid.col}  ${(selected===index)?"border border-3 border-info rounded":(dragOverIndex===index)?"border border-3 border-warning rounded":"border border-3 border-white"}` } key={index}
+                         onClick={() => { selectedIndex.current=index}}
                          onDragStart={(e) => dragStart(e, index)}
                          onDragEnter={(e) => dragEnter(e, index)}
                          onDragEnd={() => drop()}

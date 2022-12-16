@@ -11,7 +11,7 @@ import Image from './tags/Image';
 import URL from './tags/URL';
 import Footer from './tags/Footer';
 import { useGlobalContext } from '../Context';
-import './Preview.css';
+//import './Preview.css';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Share from './Share';
@@ -19,7 +19,7 @@ import Helmet from "react-helmet"
 import { url } from '../../config';
 
 export default function Preview({setPreview}) {
-    const {form,saveForm,workingId, setShare} = useGlobalContext();
+    const {form,saveForm} = useGlobalContext();
     var grid;
 
     if(form.grid === 1)
@@ -94,7 +94,7 @@ export default function Preview({setPreview}) {
         </div>
     </div>
     <div className='container d-flex justify-content-center '>
-        <div class= 'card m-3'  style={{ width: grid.width}}>
+        <div class= 'card m-3 border'  style={{ width: grid.width}}>
             <div class="card-body">
                 <h2 class="card-title text-center m-4">{form.title}</h2>
                 <h4 className='m-1'>{form.description}</h4>

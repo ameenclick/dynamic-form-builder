@@ -19,7 +19,7 @@ export default function AlertToast() {
          onClose={() => setAlert({ show: false, message: "", type: ""})} show={alert.show} delay={5000} animation={true} autohide>
         <Toast.Header>
             {/* <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" /> */}
-            <strong className="me-auto">Form Builder</strong>
+            <strong className="me-auto">Cloud4C Form Builder</strong>
             <small>A moment ago</small>
         </Toast.Header>
       <Toast.Body>{alert.message}</Toast.Body>

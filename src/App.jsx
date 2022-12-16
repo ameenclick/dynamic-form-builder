@@ -12,6 +12,7 @@ import Main from "./components/Main";
 import { AppProvider } from './Context';
 import Forms from "./Forms";
 import AlertToast from "./components/CustomSettings/AlertToast";
+import Response from "./components/Response";
 
 function App() {
 return(
@@ -28,7 +29,8 @@ return(
             </Route>
             <Route path="/Builder/:id" element={<Main />}>
             </Route>
-            <Route path="/Form/:id" element={<Form />}/>
+            <Route path="/Form/:id" element={<Form />} />
+            <Route path="/Response/:id" element={<Response />} />
             </Routes>
         </Router>
         </AppProvider>
