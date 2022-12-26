@@ -31,7 +31,7 @@ export default function ImageSettings({ fieldEdit, setEdit }) {
             <input type="number" className="form-control" value={fieldEdit.width} onChange={(e) => setEdit({...fieldEdit, ["width"]: e.target.value})} min="0" max="100"/>
         </div>
         <div className='mb-2 form-check'>
-            <input type="checkbox" className="form-check-input" value={fieldEdit.alignCenter} onChange={(e) => setEdit({...fieldEdit, ["alignCenter"]: !fieldEdit.alignCenter})} min="0" max="100"/>
+            <input type="checkbox" className="form-check-input" checked={fieldEdit.alignCenter} onChange={(e) => setEdit({...fieldEdit, ["alignCenter"]: !fieldEdit.alignCenter})} min="0" max="100"/>
             <label className='form-check-label mb-2'>Align Center</label>
         </div>
     </div>

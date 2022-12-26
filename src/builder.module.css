@@ -2,17 +2,9 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* .filed-slidebar {
-    height: 100%;
-    position: sticky;
-    z-index: 1;
-    overflow-x: hidden;
-    overflow-y: auto;
-}  */
-
 .icons-inner{
-    height: 540px;
-    width: 100px;
+    height: 500px;
+    width: 95px;
     align-items: center;
     background-color: transparent;
     overflow-x: hidden;

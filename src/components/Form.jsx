@@ -10,26 +10,29 @@ import Progress from './FormTags/Progress';
 import Image from './FormTags/Image';
 import URL from './FormTags/URL';
 import Footer from './FormTags/Footer';
-import './Preview.css';
 import axios from 'axios';
 import { url } from '../../config';
 import { useParams } from 'react-router-dom';
 import {Helmet} from "react-helmet";
+import { useGlobalContext } from '../Context';
+import AlertToast from './CustomSettings/AlertToast';
 export default function Form() {
 
     const {id} = useParams();
     const [form,setForm] = useState({});
+    const [formActive, setFormStatus] = useState(false)
     const [choice, setChoice] = useState(null);
     const [submitted, setSubmitted] = useState(false);
+    const { setAlert } = useGlobalContext();
     
     useEffect(() => {
         if(id)
         {
-            console.log(id)
             axios.get(url.API+"Form/"+id, {headers: { "Content-Type": "application/json"}})
             .then((res) => {
                 if(res.data._id){
-                    setForm(res.data);
+                    setForm(res.data.stack.pop());
+                    setFormStatus(res.data.active);
                 }
             })
             .catch(err => {
@@ -50,39 +53,57 @@ export default function Form() {
 
     //Submit User Response
     function SubmitForm() {
-        var response
-        var responses=[]
+        var responses={}
         console.log("Submit Form")
+        //Validating all input field for required
         for(var i=0;i<form?.fields?.length;i++)
         {
-            response={}
+            
             if(form.fields[i].tag === "radio")
             {
-                response[form.fields[i].label]= choice
+                if(choice===null && form?.fields[i].required===true)
+                {
+                    setAlert({
+                        message: "Fill all required fields",
+                        type: "warning",
+                        show: true
+                    })
+                    return false
+                }
+                responses[form.fields[i].label]= choice
             }
             else if(form.fields[i].tag === "checkbox")
             {
-                response[form.fields[i].label]= document.getElementById(i).checked
+                responses[form.fields[i].label]= document.getElementById(i).checked
             }
-            else if(form.fields[i].label)
+            else if(document.getElementById(i) !== null)
             {
-                response[form.fields[i].label]= document.getElementById(i).value
+                console.log((document.getElementById(i).value),form?.fields[i].required)
+                if(!document.getElementById(i).value && form?.fields[i].required===true)
+                {
+                    console.log("Alert")
+                    setAlert({
+                        message: "Fill all required fields",
+                        type: "warning",
+                        show: true
+                    })
+                    return false
+                }
+                responses[form.fields[i].label]= document.getElementById(i).value
             }
-            responses=[...responses,response]
         }
         axios.post(url.API+"Form/Submit", {
             userId: makeid(10),
             formId: id,
+            versionId: form.version,
             response: responses
         })
         .then((res) => {
-            console.log(res)
             if(res.status==200) setSubmitted(true)
         })
         .catch(err => {
             console.log(err)
         })
-
     }
 
     var grid;
@@ -123,20 +144,21 @@ export default function Form() {
         <meta charSet="utf-8" />
         <title>{form?.title+"  | Cloud4C Services"}</title>
     </Helmet>
+    <AlertToast />
     {
         submitted?
         <div className='container d-flex justify-content-center '>
-            <div class= 'card m-3'  style={{ width: grid.width}}>  
+            <div class={'card m-3 bg-success text-white'}  style={{ width: grid.width}}>  
                 <div class="card-body">    
                 <h5 class="card-title text-center m-4">Your response submitted</h5>
-                <p>Thank you for response</p>
+                <p>Thank you for your response</p>
                 </div>
             </div>
         </div>
         :
         <div className='container d-flex justify-content-center '>
         {
-            form?.active?
+            formActive?
                     <div class= 'card m-3'  style={{ width: grid.width}}>  
                     <div class="card-body">
                         <h2 class="card-title text-center m-4">{form?.title}</h2>

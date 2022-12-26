@@ -1,9 +1,10 @@
 import React from 'react'
 import { Modal,Button }  from 'react-bootstrap';
 import { useGlobalContext } from '../../Context';
+import APIResponse from "./APIResponse";
 
-export default function MyVerticallyCenteredModal(props) {
-  const { fieldEdit, setEdit, handleFetch } = useGlobalContext();
+export default function APIConfigure(props) {
+  const { fieldEdit, setEdit, handleFetch,apiResponse,setResponse, setAlert } = useGlobalContext();
   return (
       <Modal
         {...props}
@@ -19,6 +20,8 @@ export default function MyVerticallyCenteredModal(props) {
         <Modal.Body>
           {fieldEdit?.tag === "dropdown"?
             <form>
+          {apiResponse === null?
+          <div>
               <h5><b>Header Configuration</b></h5>
               <div className="mb-2">
                     <label className='form-label'>URL Path</label><span className='text-danger'>*</span>
@@ -49,6 +52,7 @@ export default function MyVerticallyCenteredModal(props) {
                   <label class="form-check-label" for="inlineRadio2">POST</label>
                 </div>
               </div>
+
               <div className='mb-2'>
                 <label className='form-label'>Headers</label><br/>
                   {
@@ -122,12 +126,19 @@ export default function MyVerticallyCenteredModal(props) {
                   </div>
                   :""
               }
-              <hr/>
+            </div>
+            :
+            <div>   
               <h5><b>Response Configuration</b></h5>
               <div className='mb-2'>
                 <div className='row'>
+                    <APIResponse dataset={apiResponse} setDataset={setResponse} />
+                </div>
+              </div>
+              <div className='mb-2'>
+                <div className='row'>
                   <div className='col'>
-                    <label className='form-label'>Show</label>
+                    <label className='form-label'>Object to Show</label>
                     <input type="text" className='form-control'
                       value={fieldEdit?.api?.label}
                       title='Give the Keyword used in API response to show in dropdown list'
@@ -138,7 +149,7 @@ export default function MyVerticallyCenteredModal(props) {
                       }}/>    
                   </div>
                   <div className='col'>
-                    <label className='form-label'>Input Value</label>
+                    <label className='form-label'>Object to Input</label>
                     <input type="text" className='form-control'
                       title='Give the value maping to the Keyword shown in dropdown list'
                       value={fieldEdit?.api?.value}
@@ -148,38 +159,80 @@ export default function MyVerticallyCenteredModal(props) {
                         setEdit({...fieldEdit, ["api"]:api})
                       }}/>    
                   </div>
-                  <div className='col'>
-                    <label className='form-label'>Object</label>
-                    <input className='form-control' type="text" 
-                      title="Only fill this field if the data set is dictionary with object."
-                      placeholder='Enter Object if any' 
-                      value={fieldEdit?.api?.object}
-                      onChange={(e) => {
-                        var api={...fieldEdit.api,};
-                        api["object"]=e.target.value
-                        setEdit({...fieldEdit, ["api"]:api})
-                      }} />
-                  </div>
                 </div>
               </div>
+            </div>
+            }
             </form>
             :""
             }
 
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={() => {
-            if(fieldEdit?.api?.url === "")
-            {  
-              alert("Fill the url field");
-              return;
+            {
+              apiResponse?
+              <Button onClick={() => {
+                //Validate if object is in dataset
+                    if(fieldEdit.api.label != "" && fieldEdit.api.value != "") //If a proper label exist
+                    {
+                      if(Array.isArray(apiResponse) && apiResponse.length>=0 && typeof(apiResponse[0]) === "object") // If dataset is iterable with objects
+                      {
+                        if(apiResponse[0].hasOwnProperty(fieldEdit.api.label) && apiResponse[0].hasOwnProperty(fieldEdit.api.value)) //If label and value objects exists
+                        {
+                          setEdit({...fieldEdit, ["choices"]: apiResponse})
+                          props.onHide()
+                          setAlert({
+                            message:"Data Loaded Successfully",
+                            type: "success",
+                            show: true
+                          })
+                        }
+                        else
+                        {
+                          alert("Invalid objects entered")
+                          return
+                        }
+                      }
+                      else
+                      {
+                        alert("Invalid Dataset")
+                        return
+                      }
+                      
+                    }
+                    else if(Array.isArray(apiResponse) && apiResponse.length>=0 && typeof(apiResponse[0]) !== "object") //If datasets consist of strings(non objects)
+                    {
+                        setEdit({...fieldEdit, ["choices"]: apiResponse})
+                        props.onHide()
+                        setAlert({
+                          message:"Data Loaded Successfully",
+                          type: "success",
+                          show: true
+                        })
+                    }
+                    else //Configuration failed to meet crietria
+                    {
+                        alert("Objects configuration does not match with dataset")
+                    }
+                }} >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
+                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                </svg>{"  "}Set Data
+              </Button>
+            :
+              <Button onClick={() => {
+                if(fieldEdit?.api?.url === "")
+                {  
+                  alert("Fill the url field");
+                  return;
+                }
+                else handleFetch(props);
+                }} >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
+                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                </svg>{"  "}Get Data
+              </Button>
             }
-            else handleFetch(props);
-            }} >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
-              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-            </svg>{"  "}Set API
-          </Button>
         </Modal.Footer>
       </Modal>
     );

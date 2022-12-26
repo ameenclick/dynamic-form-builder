@@ -17,7 +17,6 @@ const Builder = ({setPreview}) => {
     useEffect(() =>(
         document.body.style.backgroundImage=null,
         document.body.style.overflow='hidden'
-
     ),[])
     
     return(
@@ -46,7 +45,7 @@ const Builder = ({setPreview}) => {
             }
         </div>
         <AlertToast />
-        <ParametersCanvas scroll={true} backdrop={false} placement={'end'} name={'Enable body scrolling'} setPreview={setPreview}/>
+        <ParametersCanvas scroll={true} backdrop={false} placement={'end'} name={'Enable body scrolling'} setpreview={setPreview}/>
     </>
     )
 };

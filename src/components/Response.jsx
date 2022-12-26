@@ -29,7 +29,8 @@ export default function Response() {
   return (
     <div className='container'>
         {
-          <table class="table table-dark table-striped">
+          data.length>0?
+          <table class="table table-dark table-striped rounded-pill">
               <thead>
               <tr>
                  <th>S No</th>
@@ -43,26 +44,33 @@ export default function Response() {
               </thead>
               <tbody>
               {
-                  data?.map((res, index) =>
+                  data?.map((res, rindex) =>
                   <tr>
                     <td>
-                      {index+1}
+                      {rindex+1}
                     </td>
                     <td>
                       {res.userId}
                     </td>
-                    {
-                    res.response.map((userInputs,lIndex) =>
-                    <td>
-                     {userInputs[fields[lIndex]]!==undefined?String(userInputs[fields[lIndex]]):""}
-                    </td>
+                      {
+                    fields.map((label,fIndex) => 
+                        res.response.map((userInputs) =>
+                        userInputs.hasOwnProperty(label)?
+                        <td>
+                        {userInputs[label]}
+                        </td>
+                        :
+                        <td>{null}</td>
+                        )
                     )
-                    }
+                      }
                   </tr>
                   )
               }
               </tbody>
           </table>
+          :
+          <h2>No response received till now.</h2>
         }
     </div>
   )

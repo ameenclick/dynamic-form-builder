@@ -5,23 +5,22 @@ export default function Input({ field, index }) {
   return ( 
     field?.tag === "input"?
         <div className='mb-3'>
-        <label class="form-label">{field.label}</label>
-        <div class={` ${field.icon?"input-group":""}`}>
+        <label className="form-label">{field.label}</label><span className='text-danger'>{field.required?"*":""}</span>
+        <div className={` ${field.icon?"input-group":""}`}>
         {
           field.icon?.span === "prefix" && field?.icon?.svg?
-          <span class="input-group-text">
+          <span className="input-group-text">
             {icons[field?.icon?.svg]}
           </span>
           :""
         }
         <input id={index} type={field.type} name={`${field.tag}${index}`} 
-                class={field.colSize+" "+field.columns} 
+                className={field.colSize+" "+field.columns} 
                 placeholder={field.placeholder} 
-                require={field.required} 
-                disable={field.disabled}/>
+                required={field.required}/>
         {
           field?.icon?.span === "sufix" && field?.icon?.svg?
-          <span class="input-group-text">
+          <span className="input-group-text">
             {icons[field?.icon?.svg]}
           </span>
           :""

@@ -20,19 +20,21 @@ function AppProvider({ children }) {
   const [workingId, setWorking] = useState(null);
   const [showShare, setShare] = useState(false);
   const selectedIndex = useRef(null);
-
+  const [apiResponse, setResponse] = useState(null)
+  
+  const [formData, setFormData] = useState({})
   //State to manage form
   const [form, setForm] = useState({
     title: "",
     description: "",
     grid: 1,
-    active: true,
     fields: []
   })
 
   //Checking the change
   useEffect(()=>{
     if(localStorage.getItem("form")) setForm(JSON.parse(localStorage.getItem("form")))
+    if(localStorage.getItem("formData")) setFormData(JSON.parse(localStorage.getItem("formData")))
     if(localStorage.getItem("workingId") && !workingId) setWorking(localStorage.getItem("workingId"))
   }, [])
 
@@ -41,9 +43,16 @@ function AppProvider({ children }) {
     if(workingId) localStorage.setItem("workingId",workingId)
   }, [workingId])
 
+  //Taking a backup in cache to avoide accidential loss
   useEffect(() => {
     localStorage.setItem("form", JSON.stringify(form))
   },[form])
+
+  //Taking a backup in cache to avoide accidential loss
+  useEffect(() => {
+    //console.log(formData)
+    localStorage.setItem("formData", JSON.stringify(formData))
+  }, [formData])
 
   //State to manage the fields
   const fields = {
@@ -59,7 +68,6 @@ function AppProvider({ children }) {
             "span": "prefix",
             "svg": null
         },
-        "response": "" 
     },
     "textarea": {
         "tag": "textarea",
@@ -70,7 +78,6 @@ function AppProvider({ children }) {
         "colSize": "form-control",
         "type": "text",
         "required": false,
-        "response": "" 
     },
     "dropdown": {
         "tag": "dropdown",
@@ -92,10 +99,8 @@ function AppProvider({ children }) {
         "api": {
             "url": "",
             "method": "GET",
-            "headers": [
-                {"key": "Authorization", "value": ""}
-            ],
-            "object": "",
+            "headers": [],
+            "objects": [""],
             "label": "label",
             "value": "value",
             "data": "",
@@ -104,7 +109,6 @@ function AppProvider({ children }) {
         "colSize": "form-select",
         "type": "text",
         "required": false,
-        "response": "" 
     },
     "checkbox": {
         "tag": "checkbox",
@@ -113,7 +117,6 @@ function AppProvider({ children }) {
         "required": false,
         "checked": false,
         "disabled": false,
-        "response": "" 
     },
     "radio": {
         "tag": "radio",
@@ -121,8 +124,7 @@ function AppProvider({ children }) {
         "inline": "form-check-inline",
         "choices": ["choice1","choice2"],
         "required": false,
-        "checked": false,
-        "response": "" 
+        "checked": false
     },
     "static": {
         "tag": "static",
@@ -136,7 +138,8 @@ function AppProvider({ children }) {
         "min": 0, 
         "max": 100,
         "label": "Progress Bar Out of 10",
-        "response": 0 
+        "response": 0,
+        "required": false
     },
     "image": {
         "tag": "image",
@@ -180,13 +183,11 @@ function AppProvider({ children }) {
 
   const dragStart = (e, position) => {
       dragItem.current = position;
-      //console.log(e.target.innerHTML);
     };
 
   const dragEnter = (e, position) => {
       dragOverItem.current = position;
       setDragOverIndex(position)
-      //console.log(e.target.innerHTML);
     };
 
   function drop(tag){
@@ -213,44 +214,28 @@ function AppProvider({ children }) {
         }  
     };
 
-    //Handle API call
+    //Handle API call for Dropdown Settings
     const handleFetch = (props) => {
         if(fieldEdit?.api?.url)
         {
-            var headers={}
+            let customHeaders={
+                "Content-Type": "application/json"
+            }
             //Fetching multiple headers if any
             for(var i=0;i<fieldEdit?.api?.headers.length; i++)
             {
-                headers[fieldEdit?.api?.headers[i].key]=fieldEdit?.api?.headers[i].value
+                customHeaders[fieldEdit?.api?.headers[i].key]=fieldEdit?.api?.headers[i].value
             }
-            console.log(headers)
             var axiosConfig ={
                 url: fieldEdit?.api?.url,
                 method: fieldEdit?.api?.method,
-                headers: headers
+                headers: customHeaders,
+                responseType: 'json',
             } 
             if(fieldEdit?.api?.method === "POST") axiosConfig["data"]=JSON.stringify(fieldEdit?.api?.data)
-            axios.request(axiosConfig)
+            axios(axiosConfig)
             .then((res) => {
-                console.log(res)
-                if(fieldEdit?.api?.object.length === 0)
-                {
-                    setAlert({
-                        show: true, 
-                        message: "Valid API, but empty or invalid object",
-                        type: "secondary"
-                    })
-                }
-                else
-                {
-                    setEdit({...fieldEdit, ["choices"]: res.data[fieldEdit?.api?.object]})
-                    setAlert({
-                        show: true, 
-                        message: "Valid API, Updated the data successfully",
-                        type: "success"
-                    })
-                    props.onHide()
-                }
+                setResponse(res.data)
             })
             .catch((err) => {
                 console.log(err)
@@ -266,7 +251,9 @@ function AppProvider({ children }) {
         }
     }
 
-    const saveForm = (props) => {
+    //Creating Form
+    const saveForm = () => {
+        //Create new form
         if(!workingId)
         {
             axios.post(url.API+"Form/Store", form, {
@@ -303,45 +290,79 @@ function AppProvider({ children }) {
         }
         else
         {
+            //Update already created form
             updateForm(workingId);
         }
         setShare(true)
     }
 
+    //Activate the form
+    function formActivate(id,data){
+        axios.post(url.API+"Form/Status/"+id, data, {
+            headers: { 'Content-Type': 'application/json'}
+        })
+        .then((res) => {
+            if(res.data._id)
+            {
+                setAlert({
+                    show: true, 
+                    message: data.active?"Form Activated":"Form Deactivated",
+                    type: data.active?"success":"warning"
+                })
+            }
+        }).catch((err) => {
+            console.log(err)
+            setAlert({
+                show: true, 
+                message: "Process failed : "+err.message,
+                type: "danger"
+            })
+        })
+    }
+
+    //Function to update contents of the form
     function updateForm(){
         axios.patch(url.API+"Form/"+arguments[0], arguments.length>1?arguments[1]:form, {
             headers: { 'Content-Type': 'application/json'}
         })
-            .then((res) => {
-                if(res.data._id)
+        .then((res) => {
+            if(res.data._id)
+            {
+                if(arguments.length>1)
                 {
-                    if(arguments.length>1)
-                    {
-                        setAlert({
-                            show: true, 
-                            message: arguments.length>1?arguments[1].active?"Form Activated":"Form Deactivated":"",
-                            type: arguments.length>1?arguments[1].active?"success":"warning":""
-                        })
-                    }
-                    else
-                    {
-                        setAlert({
+                    setAlert({
                         show: true, 
-                        message: "Form Updated Successfully",
-                        type: "success"
+                        message: arguments.length>1?arguments[1].active?"Form Activated":"Form Deactivated":"",
+                        type: arguments.length>1?arguments[1].active?"success":"warning":""
                     })
-                    }
                 }
                 else
                 {
                     setAlert({
                         show: true, 
+                        message: "Form Updated Successfully",
+                        type: "success"
+                    })
+                }
+            }
+            else if(res.status === 205)
+            {
+                setAlert({
+                    show: true, 
+                    message: "Form already saved",
+                    type: "info"
+                })
+            }
+            else
+            {
+                setAlert({
+                        show: true, 
                         message: "Something went wrong",
                         type: "secondary"
                     })
-                }
-            })
-            .catch((err) => {
+            }
+        })
+        .catch((err) => {
                 console.log(err)
                 setAlert({
                     show: true, 
@@ -373,12 +394,11 @@ function AppProvider({ children }) {
     function getForm(id){
         axios.get(url.API+"Form/"+id, {headers: { "Content-Type": "application/json"}})
             .then((res) => {
-                console.log(res)
                 if(res.data._id){
-                    setForm(res.data);
+                    setForm(res.data.stack[res.data.stack.length-1]);
+                    setFormData(res.data)
                     setWorking(id)
                 }
-                console.log("Form")
             })
             .catch(err => {
                 console.log(err)
@@ -398,13 +418,13 @@ function AppProvider({ children }) {
         <AppContext.Provider
             value={{ 
                 show, handleClose, toggleShow,
-                form, setForm, getForm,updateForm, onForm, setHover, 
+                form, setForm, getForm,updateForm, onForm, setHover, saveForm,formData, setFormData,formActivate,
                 selectedIndex, handleEdit,
                 fields, selected, setSelected, fieldEdit, setEdit, deleteField,
                 dragStart, dragEnter, dragOverIndex, drop,
-                handleFetch, saveForm,
+                handleFetch, apiResponse,setResponse,
                 alert, setAlert,
-                showShare, setShare, workingId, setWorking
+                showShare, setShare, workingId, setWorking,
             }}
         >
             {children}

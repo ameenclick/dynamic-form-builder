@@ -1,13 +1,26 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal'
 import { url } from '../../config';
 import { useGlobalContext } from '../Context';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import { useEffect } from 'react';
+import { useRef } from 'react';
 
 export default function Share() {
-    const {showShare, setShare, workingId} = useGlobalContext()
+    const {showShare, setShare, workingId} = useGlobalContext();
+    const [sec, setSec] = useState(5)
+
+    //Timer for Copy
+    useEffect(() => {
+      if(sec < 5)
+      {
+        setTimeout(() => {
+          setSec(sec+1)
+        }, 1000)
+      }
+    }, [sec])
 
   return (
     <div>
@@ -21,14 +34,15 @@ export default function Share() {
                     delay={{ show: 250, hide: 400 }}
                     overlay={
                         <Tooltip id="button-tooltip">
-                            Copy Link
+                            {sec<5?"Link Copied":"Copy Link"}
                         </Tooltip>
                     }
                     >
-                    <button className="btn btn-outline-secondary"
+                    <button className={sec<5?"btn btn-secondary":"btn btn-outline-secondary"}
                         onClick={() => {
                             var path=url.domain+"form/"+workingId
                             navigator.clipboard.writeText(path)
+                            setSec(0);
                         }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard2" viewBox="0 0 16 16">
                             <path d="M3.5 2a.5.5 0 0 0-.5.5v12a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-12a.5.5 0 0 0-.5-.5H12a.5.5 0 0 1 0-1h.5A1.5 1.5 0 0 1 14 2.5v12a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-12A1.5 1.5 0 0 1 3.5 1H4a.5.5 0 0 1 0 1h-.5Z"/>

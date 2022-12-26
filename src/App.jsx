@@ -11,8 +11,9 @@ import Form from "./components/Form";
 import Main from "./components/Main";
 import { AppProvider } from './Context';
 import Forms from "./Forms";
-import AlertToast from "./components/CustomSettings/AlertToast";
 import Response from "./components/Response";
+import AvailableForms from "./components/AvailableForms";
+import APIResponse from "./components/CustomSettings/APIResponse";
 
 function App() {
 return(
@@ -20,17 +21,17 @@ return(
     <BrandNav/>
     <React.StrictMode>
         <AppProvider>
-            <AlertToast />
         <Router>
-        <Routes>
-            <Route path="/" element={<LandPage />} />
-            <Route path="/Forms" element={<Forms />} />
-            <Route path="/Builder" element={<Main />}>
-            </Route>
-            <Route path="/Builder/:id" element={<Main />}>
-            </Route>
-            <Route path="/Form/:id" element={<Form />} />
-            <Route path="/Response/:id" element={<Response />} />
+            <Routes>
+                <Route path="/" element={<LandPage />} /> 
+                <Route path="/Forms" element={<Forms />} />
+                <Route path="/Builder" element={<Main />}> {/* Goto new Builder*/}
+                </Route>
+                <Route path="/Builder/:id" element={<Main />}> {/* Open stored form in Builder */}
+                </Route>
+                <Route path="/Form/:id" element={<Form />} />
+                <Route path="/Response/:id" element={<Response />} />
+                <Route path="/Respond/" element={<AvailableForms />} /> {/* List all active forms */}
             </Routes>
         </Router>
         </AppProvider>

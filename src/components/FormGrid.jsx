@@ -15,7 +15,6 @@ import Footer from './tags/Footer';
 export default function FormGrid() {
     const {form, selected, dragStart, dragEnter, dragOverIndex, drop, setHover, selectedIndex} = useGlobalContext();
 
-    //console.log(screen.width)
     var grid;
     if(form.grid === 1)
     { 
@@ -39,9 +38,9 @@ export default function FormGrid() {
 
   return (
     <div className='container'>
-        <div class={`card my-2 border`} style={{ width: grid.width}} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-            <div class="card-body">
-                <h2 class="card-title text-center m-4">{form.title}</h2>
+        <div className={`card my-2 border`} style={{ width: grid.width}} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+            <div className="card-body">
+                <h2 className="card-title text-center m-4">{form.title}</h2>
                 <h4 className='m-1'>{form.description}</h4>
                 <Row>
                 {
@@ -52,7 +51,7 @@ export default function FormGrid() {
                          onDragEnter={(e) => dragEnter(e, index)}
                          onDragEnd={() => drop()}
                          draggable>
-                        <div class="mb-3" style={{ userSelect: "none" }}>
+                        <div className="mb-3" style={{ userSelect: "none" }}>
                         <Input field={field} index={index}/>
                         <Textarea field={field} index={index}/>
                         <Dropdown field={field} index={index}/>
